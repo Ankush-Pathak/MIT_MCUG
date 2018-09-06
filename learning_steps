@@ -1,0 +1,30 @@
+1. Initialise a geth node
+	- geth --datadir=./chaindata init genesis.json
+	
+	Start geth node
+	- geth --datadir=./chaindata --rpc --rpccorsdomain="*" --rpcaddr "localhost" --rpcport 30304 --rpcapi="db,eth,net,web3,personal"
+
+	Geth attach
+	- geth attach ipc:./chaindata/geth.ipc
+	- personal.newAccount(passphrase)
+	- miner.start(no_of_threads)
+
+2. Compile and deploy smart contract
+	Compile code
+	- node
+	- code = fs.readFileSync(filename).toString()
+	- solc = require('solc')
+	- compiledCode = solc.compile(code)
+	- abiDefinition = JSON.parse(compiledCode.contracts[':Voting'].interface)
+
+	Deploy contract
+	-Web3 = require('web3')
+	-web3 = new Web3(new Web3.providers.HttpProvider("ip:port"))
+	-web3.personal.unlockAccount(web3.eth.accounts[0],"passphrase", timeout)
+	-geth: miner.start(1)
+	-VotingContract = web3.eth.contract(abiDefinition)
+	-bytecode = compiledCode.contracts[':Voting'].bytecode
+	-deployedContract = VotingContract.new(['A','B','C'],{data:'0x':bytecode, from: web3.eth.accounts[0], gas:4700000})
+	-contractInstance = VotingContract.at(deployedContract.address)
+	-contractInstance.voteForCandidate('A',{from:web3.eth.accounts[0]})
+	-contractInstance.totalVotesFor.call('A').toLocaleString()
